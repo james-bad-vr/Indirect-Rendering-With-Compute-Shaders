@@ -383,7 +383,11 @@ public class IndirectRenderer : MonoBehaviour
         Matrix4x4 v = mainCamera.worldToCameraMatrix;
         Matrix4x4 p = mainCamera.projectionMatrix;
         m_MVP = p * v;//*m;
-        
+
+        Debug.Log("View: \n" + v);
+        Debug.Log("Projeciton: \n" + p);
+        Debug.Log("ViewProjeciton: \n" + m_MVP);
+
         if (logInstanceDrawMatrices)
         {
             logInstanceDrawMatrices = false;
@@ -535,6 +539,7 @@ public class IndirectRenderer : MonoBehaviour
         Profiler.BeginSample("LOD Sorting");
         {
             m_lastCamPosition = m_camPosition;
+            
             Graphics.ExecuteCommandBufferAsync(m_sortingCommandBuffer, ComputeQueueType.Background);
         }
         Profiler.EndSample();
@@ -562,6 +567,7 @@ public class IndirectRenderer : MonoBehaviour
         uint MATRIX_HEIGHT = (uint)NUM_ELEMENTS / BITONIC_BLOCK_SIZE;
 
         m_sortingCommandBuffer = new CommandBuffer {name = "AsyncGPUSorting"};
+        m_sortingCommandBuffer.SetExecutionFlags(CommandBufferExecutionFlags.AsyncCompute);
 
         // Sort the data
         // First sort the rows for the levels <= to the block size
